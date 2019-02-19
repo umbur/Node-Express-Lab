@@ -66,5 +66,31 @@ server.post("/api/posts", (req, res) => {
     });
   });
 
+  // Removes the post with the specified id and returns the deleted post object. 
+
+server.delete('/api/posts/:id', (req, res) => {
+    const postId = req.params.id;
+
+    db.findById(postId)
+    .then(post => {
+        if (!post){
+            return res
+            .status(404)
+            .json({ message: "The post with the specified ID does not exist." })
+        } else {
+            db.remove(postId)
+            .then(count  => {
+                res.status(200).json(post);
+            })
+            .catch(err => {
+                res.status(500).json({ error: "The post could not be removed" })
+            })
+        }
+    })
+
+})
+       
+
+
 
 server.listen(4000, () => console.log("server running on porn 4000"));
