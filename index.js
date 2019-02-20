@@ -89,8 +89,33 @@ server.delete('/api/posts/:id', (req, res) => {
     })
 
 })
+
+// Updates the post with the specified id using data from the request body
+
+server.put('/api/posts/:id', (req, res) => {
+    const postId = req.params.id;
+    const changes = req.body;
+
+    db.findById(postId)
+    .then(post => {
+        if (!post) {
+            return res
+            .status(404)
+            .json({ message: 'The post with the specified ID does not exist.' })
+        } else if (!changes.title || !changes.contents) {
+            return res
+            .status(400)
+            .json({ errorMessage: "Please provide title and contents for the post." })
+        }
+        else {
+            db.update(postId, changes).then(count => {
+                res.status(200).json(post);
+            })
+            .catch(err => res.status(500).json({ error: "The post information could not be modified." }))
+        }
+        
+        
+    })
+})
        
-
-
-
 server.listen(4000, () => console.log("server running on porn 4000"));
